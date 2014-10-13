@@ -1,0 +1,218 @@
+<HTML>
+<!--
+  Copyright (C) 2014 AstraZeneca, David Cosgrove
+
+   @@ All Rights Reserved @@
+  This file is part of SVDClus.
+  The contents are covered by the terms of the BSD license
+  which is included in the file license.txt, found at the root
+  of the source tree.
+-->
+
+<HEAD><TITLE>Using svdclus</TITLE></HEAD>
+
+<BODY>
+<H1 align=center>svdclus</H1>
+<H2><A name="Introduction">Introduction</A></H2>
+Svdclus is an interactive program for clustering molecules. It is
+primarily a vehicle for experimenting with
+spectral clustering, first used
+in cheminformatics by Brewer(<A href="#Brewer_Ref">1</A>), although
+the technique is relatively well-established in image analysis.  In
+the case of cheminformatics, it involves extracting the eigenvectors
+from a manipulated distance matrix for the molecules, as follows:
+<UL>
+<LI>Calculate the similarity matrix for the molecules based on
+  fingerprints</LI>
+<LI>Apply a Gaussian filter to the distances so that low similarity
+  values are lowered further</LI>
+<LI>Apply a threshold to the new similarity values, setting very low
+  ones to zero</LI>
+<LI>Use a Lanczos singular-value decomposition (SVD, hence the program
+  name) to compute the top <I>N</I> eigenvalues and eigenvectors</LI>
+<LI>Build the clusters from the eigenvectors, applying a threshold to
+  the contributions each molecule makes to the eigenvector.</LI>
+</UL>
+</P>
+<P>
+As the description above may suggest to you, a major difference
+between this clustering technique and others is that molecules can
+appear in more than one cluster.  Indeed, without the final filtering
+step above, all molecules would be in all clusters.  How well a
+molecule belongs in a cluster is given
+by its contribution to the eigenvector.  Most clusters have some
+high-contribution members followed by a long tail of things with very
+low contributions.
+<P>
+So as to allow easy comparisons with 
+other techniques, k-means clustering and fuzzy k-means have also been implemented.
+
+<H3><A name="Implementation">Implementation</A></H3>
+Svdclus is the result of a CASE studentship AstraZeneca had with the Gillet
+group at Sheffield University, the student being Sonny Gan.  He did
+all the hard work, investigating different parameter settings,
+understanding the maths, etc., I have taken all that and cobbled it
+into this program.  To enable its use by the widest possible audience,
+it has been written in RDKit(<A href="#RDKit_Ref">2</A>),
+an open-source cheminformatics toolkit largely due to Greg Landrum,
+currently at Novartis. This includes both the fingerprint generation
+and the depiction.
+
+<H2><A name="Using_svdclus">Using svdclus</A></H2>
+<P>
+At its simplest, svdclus can be run with no command-line
+arguments. However, it's more convenient to my mind to use arguments
+to load molecules and data. They can always be loaded using menu
+commands, though. Help->About SVDClus gives a full list of the
+acceptable arguments.
+</P>
+<P>
+Svdclus uses a <B>M</B>ultiple <B>D</B>ocument <B>I</B>nterface model,
+where multiple windows can be open within the main pane, the windows
+can be stacked, tiled, minimised, destroyed, etc.  One window is the
+Molecules spreadsheet, which holds the SMILES strings and data. This
+cannot be destroyed, though it can be minimised.
+</P>
+<H3><A name="File_Menu">File Menu</A></H3>
+This menu allows for reading molecules (as SMILES files only, at the
+moment), data files and also has the quit button. Data files are
+expected to contain tables of values, either floats or ints. They must
+have a space-separated set of column headings including one for the
+molecule name. No spaces in a column heading, then, even if you
+'protect' it with quotes.
+<H3><A name="Fingerprints_Menu">Fingerprints Menu</A></H3>
+Before you can do any clustering, you need some fingerprints.  You can
+use the RDKit Circular/Morgan fingerprints (similar to Scitegic's
+ECFP6) or the RDKit Linear fingerprints (similar to Daylight's
+fingerprint). You can also read in your own from a file, in ASCII
+format i.e. one line per fingerprint with a name and then a series of
+1s and 0s, with or without spaces.
+<H3><A name="Clusters_Menu">Clusters Menu</A></H3>
+There are 3 clustering methods at the moment, 'Build SVD' is the spectral
+clustering, and there's k-means, and fuzzy k-means too, for
+comparison. Each pops up its own dialogue box.
+<H4><A name="SVD_Dialog">SVD Dialog</A></H4>
+The different fields are:
+<UL>
+<LI><B>Tversky Alpha, Tversky Beta.</B> An interesting possibility
+  with spectral clustering is the use 
+  of an asymmetric similarity metric such as Tversky, where the
+  similarity of A to B is not necessarily the same as the similarity
+  of B to A.  When such a similarity matrix is used in spectral
+  clustering, two sets of clusters are produced, the U and V 
+  clusters.  The SVD Dialog lets you set values for Tversky Alpha and
+  Beta coefficients. By default they are both 1, which gives you a
+  Tanimoto similarity. In this, the U and V clusters will be
+  identical, so only one is created.
+</LI>
+<LI><B>Gaussian filter</B> controls the tightness of the Gaussian
+  used when transforming the similarity  matrix. A larger value gives
+  more zero similarities, a smaller, fewer.  The default is 10, which
+  Sonny thinks works pretty well.
+</LI>
+<LI><B>Similarity threshold</B> is the maximum value that the transformed
+  similarity can take - anything lower than that will be set to
+  zero.
+</LI>
+<LI><B>Cluster threshold</B> is the maximum value of a molecule's
+  contribution to an eigenvector that will result in its inclusion in
+  the cluster.
+</LI>
+<LI><B>Overlapping clusters.</B> By default, the spectral clustering
+  method produces overlapping or fuzzy clusters, i.e. ones where molecules can
+  appear in more than one cluster. That's not always desirable,
+  though, so non-overlapping or crisp clusters can also be made.  This
+  is done by assigning a molecule to the cluster for which its
+  contribution to the eigenvector is
+  largest.<A name="Non_Overlapping_Fail"/A> In practice, this
+  doesn't seem to be very useful for this reason: The eigenvectors are
+  normalised to unit length. If four molecules are very similar, the
+  most they can contribute to an eigenvector is 0.5 (sqrt( 0.25 )), if
+  everything else has zero contribution. In practice, it will be a
+  smidge lower than that, as zero contributions aren't allowed.  It is
+  quite conceivable that another eigenvector might have one molecule
+  with a higher contribution than that, with all the others much
+  lower.  This means that that molecule will appear in the 2nd cluster
+  under non-overlapping clustering rules rather than the 1st, where it
+  is really a better fit. My personal view is that if you want crisp
+  clusters, use a different clustering algorithm.
+</LI>
+<LI><B>First Num. Clusters, Last Num. Clusters, Num. Clusters
+    Step.</B> As with other clustering methods, it's not clear with
+  spectral clustering how many clusters are relevant and should be
+  generated.  One guide to this is the eigenvalues of the
+  eigenvectors, which, Sonny tells me, are generally above 1 for
+  tighter clusters. That's a loose rule of thumb, though, and its
+  not clear how many clusters that would be ahead of time, in any
+  case.  The Lanzcos algorithm can be used to generate all <I>N</I>
+  eigenvectors, where <I>N</I> is the number of molecules, but this
+  is very inefficient. It's better to generate, say, 30, 40 and 50
+  clusters and see what you get.  To make that easier, you can set
+  it up to occur automatically with these fields in the dialog box.
+</LI>
+</UL>
+<H4><A name="K_Means_Dialog">K-Means Dialog</A></H4>
+<P>
+K-means clustering is an iterative procedure with a random
+start-point.  It's therefore best to do it more than once, in case you
+hit a local minimum some distance from the global one.  The first
+option in the dialog controls how many times it does this, with a
+default of 10. It is optimising the <A href="#Silhouette_Score">silhouette
+    score</A> of Rousseeuw (<A href="#Rousseeuw_Ref">3</A>). As with
+SVD clustering, you can set up multiple clusterings in one go with the
+dialog.  This is important for k-means, too, as again the optimum
+number of clusters isn't easy to predict. The clusters are presented
+in descending size order. This often means that the first cluster
+looks rubbish, but if that's so then it is rubbish, it's the cluster
+where nothing really fits, an artefact of the clustering process.
+</P>
+<H3><A name="Clusters_Window">Clusters Window</A></H3>
+<P>
+Each cluster set is shown in its own window.  The window comprises a
+tabular view onto the clusters, and a text window containing
+information about them, such as their <A href="#Silhouette_Score">silhouette
+    score</A> and how long they took to generate. Each cluster member
+is labelled with its name, its contribution to the cluster ('Cont=')
+and its individual silhouette score ('S=').  In the case of the
+K-Means clustering the contribution is the distance of the molecule to
+the cluster centroid. In addition, if you hover over a cluster member,
+all information about the molecule that is in the Molecules table will
+be displayed as a tooltip.
+</P>
+<P>
+Right-clicking on a clusters window brings up a small menu that enables
+writing of the clusters to file and also turns on and off the
+colouring of cluster members.  The colouring option allows the
+background of each cluster member to be shaded according to activity
+from bright green for the most active, to bright red for the least
+active.  The dialog gives the option of changing the sense of the
+comparison so that either a higher number is better (as in a pIC50 or
+percent activity) or a lower number is better (as in an IC50).  Any
+column from the data table may be used; missing values will be
+coloured white.
+</P>
+<H3><A name="Silhouette_Score">Silhouette Score</A></H3>
+<P>
+The crisp silhouette score of Rousseeuw (<A href="#Rousseeuw_Ref">3</A>) is
+a measure of the goodness of a cluster.  For
+each molecule it is the mean distance to other cluster members divided
+by the mean distance to the nearest other cluster. Campanello <i>et
+  al.</i>(<A href="Campanello_Ref">4</A>) have extended it to
+overlapping or fuzzy sets by scaling each molecules crisp silhouette
+score by its contribution to the cluster in question.  As such, it
+suffers from the failing of the non-overlapping clusters from spectral
+clustering mentioned <A href="#Non_Overlapping_Fail">above</A>.
+</P>
+<H2><A name="References">References</A></H2>
+<P>
+<OL>
+<LI><A name="Brewer_Ref">M. L. Brewer</A>, JCIM, <B>47</B>, 1727-1733
+  (2007)</LI>
+<LI><A name="RDKit_Ref">www.rdkit.org</A></LI>
+<LI><A name="Rousseeuw_Ref">P. J. Rousseeuw</A>,
+  J. Comp. Appl. Maths, <B>20</B>, 53-65 (1987)</LI>
+<LI><A name="Campanello_Ref">Campanello <I>et al.</I></A>, Fuzzy Sets
+  and Systems, <B>157</B>, 2858-2875 (2006)</LI>
+</OL>
+</P>
+</BODY>

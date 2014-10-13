@@ -1,0 +1,20 @@
+c1cc2cccnc2c(c1)O Str001
+c1cc(ccc1N)S(=O)(=O)N Str002
+c1cnc([nH]c1=O)N Str003
+c1cc(ccc1N)S(=O)(=O)c2ccc(cc2)N Str004
+c1ccc2c(c1)[nH]c(=O)s2 Str005
+c1ccc(cc1)C(=N)N
+c1ccc2c(c1)c(c[nH]2)CC(=O)O Str007
+c1cc(cc(c1)Cl)C(=O)O Str008
+Cc1cc(nc(n1)NS(=O)(=O)c2ccc(cc2)N)C Str009
+c1cnc(nc1)NS(=O)(=O)c2ccc(cc2)N Str010
+c1cc(ccc1C(=O)O)NC(=N)N Str011
+c1cc(ccc1N)S(=O)(=O)Nc2nccs2 Str012
+c1ccc2cc(ccc2c1)OCC(=O)O Str013
+Cc1ccnc(n1)NS(=O)(=O)c2ccc(cc2)N Str014
+Cc1cc(=O)[nH]c(n1)N Str015
+c1ccc2c(c1)[nH]cn2 Str016
+c1cnc2c(n1)c(=O)[nH]c(=O)[nH]2 Str017
+CCc1c(c(nc(n1)N)N)c2ccc(cc2)Cl Str018
+CNc1ccccc1C(=O)O Str019
+c1cc(ccc1C(=O)O)Cl Str020

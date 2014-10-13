@@ -1,0 +1,8 @@
+These are some more assay results for the same molecules as in
+Frags_1, but with fewer data.
+The raw assay data were % inhibition values. The data we're using are in
+have been given 300.0 for a missing value and everything else has been
+subtracted from 200.0.  This is because a) the % inhibition data goes
+below 0.0 and above 100.0. I'm not sure why that might happen and b)
+we wanted a scale that had lower numbers as more active since the
+clustering code was written for IC50s where that is the case.
