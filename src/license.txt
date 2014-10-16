@@ -2,7 +2,7 @@ Unless otherwise noted, all files in this directory and all
 subdirectories are distributed under the following license:
 
 Copyright (C) 2014
-AstraZeneca
+AstraZeneca, David Cosgrove
 
 All rights reserved.
 
