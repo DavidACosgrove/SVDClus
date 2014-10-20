@@ -13,7 +13,7 @@ Building on linux:
 The following environment variables need to be defined:
 
 RDBASE - pointing to top level of RDKit tree
-BOOST - pointing to top level of Boost tree
+BOOST_ROOT - pointing to top level of Boost tree
 SVDLIBC_HOME - pointing to top level of SVDLibC tree
 
 Then :
@@ -27,3 +27,9 @@ svdclus_help_index.html.
 It has been tested on linux under RedHat 5 and Centos 6.  It has been
 known to work on a Mac, and has never been tried on a Microsoft
 platform.
+
+Note that on Centos 6.4 and 6.5, and presumably on earlier Centos 6
+versions, the system gcc, 4.4.7, cannot compile completely Qt 5.3.0
+and later.  If you are downloading and building Qt for SVDClus, you'll
+need to get 5.2.1 or upgrade your compiler to at least 4.5.
+
