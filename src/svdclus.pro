@@ -49,7 +49,7 @@ RD_STATIC_LIBS = -lSmilesParse_static -lFingerprints_static \
 
 LIBS += -L${RDBASE}/lib $${RD_STATIC_LIBS}
 
-LIBS += -L/home/cosgrove/SVDLIBC -lsvd
+LIBS += -L${SVDLIBC_HOME} -lsvd
 
 LIBS += ${BOOST_ROOT}/lib/libboost_program_options.a ${BOOST_ROOT}/lib/libboost_regex.a
 

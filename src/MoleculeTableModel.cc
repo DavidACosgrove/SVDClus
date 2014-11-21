@@ -13,6 +13,7 @@
 #include "MoleculeRec.H"
 #include "MoleculeTableModel.H"
 
+#include <iostream>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
 
@@ -138,7 +139,9 @@ void MoleculeTableModel::rebuild_column_names() {
     BOOST_FOREACH( DATA_PAIR dp , mol->data() ) {
       QString dp_name( dp.first.c_str() );
       if( col_names_.end() == find( col_names_.begin() , col_names_.end() , dp_name ) ) {
+#ifdef NOTYET
         cout << "New column " << dp.first << " at " << col_names_.size() - 1 << endl;
+#endif
         beginInsertColumns( QModelIndex() , col_names_.size() , col_names_.size() + 1 );
         col_names_.push_back( dp_name );
         endInsertColumns();
