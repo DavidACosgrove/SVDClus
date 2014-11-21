@@ -5,10 +5,14 @@ of molecular data'
 
 Sonny Gan, David A Cosgrove, Eleanor J Gardiner and Valerie J Gillet.
 
-Submitted to the Journal of Chemical Information and Modelling,
-currently under revision.
+Published in Journal of Chemical Information and Modelling
 
-Please see the src directory for more details. It is licensed under
+http://dx.doi.org/10.1021/ci500480b.
+
+It's OpenAccess (thanks to Sheffield University for funding that) so
+anyone with an ACS account can read it.
+
+Please see the src directory for more details. SVDClus is licensed under
 the "New BSD" license, please see src/license.txt (or file LICENSE
 in this directory, a symbolic link to it) for details. File src/README
 contains information on building the program on a linux platform.
